@@ -134,81 +134,79 @@
           <text x="16" y="284" class="sm">ListMatch SoR = AWS RDS (not Cloud SQL)</text>
         </g>
 
-        <!-- Platform side cards (top-right of compute panel; AWS trunk is lower so no overlap) -->
+        <!-- Platform + Cloud SQL stay in compute zone (GCP private path; never on AWS trunk) -->
         <g transform="translate(456, 70)" filter="url(#card)">
-          <rect width="196" height="150" rx="10" fill="#FFFFFF" stroke="#C4B5FD" stroke-width="1.5"/>
-          <text x="98" y="32" text-anchor="middle" class="lab">Platform</text>
-          <text x="98" y="60" text-anchor="middle" class="sm">Secret Manager</text>
-          <text x="98" y="84" text-anchor="middle" class="sm">Artifact Registry</text>
-          <text x="98" y="108" text-anchor="middle" class="sm">Cloud Build + WIF</text>
-          <text x="98" y="132" text-anchor="middle" class="sm">Monitoring</text>
+          <rect width="196" height="130" rx="10" fill="#FFFFFF" stroke="#C4B5FD" stroke-width="1.5"/>
+          <text x="98" y="28" text-anchor="middle" class="lab">Platform</text>
+          <text x="98" y="54" text-anchor="middle" class="sm">Secret Manager</text>
+          <text x="98" y="76" text-anchor="middle" class="sm">Artifact Registry</text>
+          <text x="98" y="98" text-anchor="middle" class="sm">Cloud Build + WIF</text>
+          <text x="98" y="120" text-anchor="middle" class="sm">Monitoring</text>
         </g>
-        <g transform="translate(456, 250)" filter="url(#card)">
-          <rect width="196" height="110" rx="10" fill="#FFFFFF" stroke="#FCD34D" stroke-width="1.5"/>
-          <text x="98" y="36" text-anchor="middle" class="lab">Vertex / Claude</text>
-          <text x="98" y="64" text-anchor="middle" class="sm">Embeddings + LLM</text>
-          <text x="98" y="88" text-anchor="middle" class="sm">from orchestrator</text>
+        <g transform="translate(456, 220)" filter="url(#card)">
+          <rect width="196" height="90" rx="10" fill="#FFFFFF" stroke="#FCD34D" stroke-width="1.5"/>
+          <text x="98" y="30" text-anchor="middle" class="lab">Vertex / Claude</text>
+          <text x="98" y="54" text-anchor="middle" class="sm">Embeddings + LLM</text>
+          <text x="98" y="76" text-anchor="middle" class="sm">from orchestrator</text>
         </g>
+        <g transform="translate(456, 330)" filter="url(#card)">
+          <rect width="196" height="130" rx="10" fill="#ECFDF5" stroke="#10B981" stroke-width="1.5"/>
+          <text x="98" y="28" text-anchor="middle" class="lab">Cloud SQL</text>
+          <text x="98" y="52" text-anchor="middle" class="sm">assetsor-pg</text>
+          <text x="98" y="74" text-anchor="middle" class="sm">Langfuse / AI obs</text>
+          <text x="98" y="96" text-anchor="middle" class="sm">Private IP (GCP)</text>
+          <text x="98" y="118" text-anchor="middle" class="sm">NOT ListMatch SoR</text>
+        </g>
+        <!-- Green stays inside Zone A: Direct VPC / langfuse → Cloud SQL -->
+        <path d="M424 412 H 456" fill="none" stroke="#059669" stroke-width="2.5" marker-end="url(#arrG)"/>
+        <text x="300" y="400" class="flowG">private IP (no NAT)</text>
       </g>
     </g>
 
-    <!-- Zone B: AWS edge + GCP private SQL -->
+    <!-- Zone B: AWS edge ONLY (no GCP Cloud SQL here — avoids crossed arrows) -->
     <g transform="translate(780, 56)">
       <rect width="1048" height="1060" rx="14" fill="none" stroke="#60A5FA" stroke-width="2" stroke-dasharray="10 6"/>
-      <text x="20" y="30" class="zone">Zone us-central1-b / AWS edge + private data</text>
+      <text x="20" y="30" class="zone">AWS edge (outside GCP private path)  |  reached only via NAT</text>
 
       <g transform="translate(20, 48)" filter="url(#card)">
-        <rect width="1008" height="780" rx="12" fill="#FFFFFF" stroke="#FDBA74" stroke-width="1.75"/>
-        <text x="24" y="36" class="sec">AWS edge (HMN-owned)  -  reached only via NAT allowlisted IPs</text>
-        <text x="24" y="56" class="sm">No Site-to-Site VPN  |  No direct Cloud Run to AWS arrows</text>
+        <rect width="1008" height="680" rx="12" fill="#FFFFFF" stroke="#FDBA74" stroke-width="1.75"/>
+        <text x="24" y="36" class="sec">AWS (HMN-owned)  -  all traffic sourced from NAT VM allowlisted IPs</text>
+        <text x="24" y="56" class="sm">No Site-to-Site VPN  |  No arrows from Cloud Run directly to these boxes</text>
 
-        <!-- AWS targets - fan-in from NAT only -->
-        <g id="aws-rds" transform="translate(280, 90)">
-          <rect width="680" height="90" rx="10" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.5"/>
-          <text x="20" y="30" class="lab">AWS RDS SQL Server</text>
-          <text x="20" y="54" class="sm">ListMatch SoR  |  ListMatch_Dev / ListMatch_Staging</text>
-          <text x="20" y="74" class="sm">Public endpoint; source IP = NAT VM (TCP 1433 allowlisted)</text>
+        <g id="aws-rds" transform="translate(40, 90)">
+          <rect width="920" height="100" rx="10" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.5"/>
+          <text x="20" y="32" class="lab">AWS RDS SQL Server</text>
+          <text x="20" y="56" class="sm">ListMatch SoR  |  ListMatch_Dev / ListMatch_Staging</text>
+          <text x="20" y="80" class="sm">Public endpoint; source IP = NAT VM (TCP 1433 allowlisted)</text>
         </g>
-        <g id="aws-s3" transform="translate(280, 200)">
-          <rect width="680" height="80" rx="10" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.5"/>
-          <text x="20" y="28" class="lab">AWS S3</text>
-          <text x="20" y="50" class="sm">hm-listmatch-dev-data / hm-listmatch-stage-data</text>
-          <text x="20" y="68" class="sm">Uploads + Lambda deployment zips</text>
+        <g id="aws-s3" transform="translate(40, 220)">
+          <rect width="920" height="90" rx="10" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.5"/>
+          <text x="20" y="30" class="lab">AWS S3</text>
+          <text x="20" y="54" class="sm">hm-listmatch-dev-data / hm-listmatch-stage-data</text>
+          <text x="20" y="76" class="sm">Uploads + Lambda deployment zips</text>
         </g>
-        <g id="aws-lambda" transform="translate(280, 300)">
-          <rect width="680" height="80" rx="10" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.5"/>
-          <text x="20" y="28" class="lab">AWS Lambda</text>
-          <text x="20" y="50" class="sm">hm-listmatch-*-report-generator (us-east-1)</text>
-          <text x="20" y="68" class="sm">Column mapping / report generation</text>
-        </g>
-
-        <!-- GCP Cloud SQL separate -->
-        <g id="gcp-sql" transform="translate(280, 420)">
-          <rect width="680" height="100" rx="10" fill="#ECFDF5" stroke="#10B981" stroke-width="1.5"/>
-          <text x="20" y="30" class="lab">Shared Cloud SQL  |  assetsor-pg  (GCP)</text>
-          <text x="20" y="54" class="sm">Langfuse + AI obs only  |  Private IP (e.g. Dev 10.170.80.8)</text>
-          <text x="20" y="78" class="sm">NOT ListMatch SoR  |  Shared with SAM AssetSOR DBs</text>
+        <g id="aws-lambda" transform="translate(40, 340)">
+          <rect width="920" height="90" rx="10" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.5"/>
+          <text x="20" y="30" class="lab">AWS Lambda</text>
+          <text x="20" y="54" class="sm">hm-listmatch-*-report-generator (us-east-1)</text>
+          <text x="20" y="76" class="sm">Column mapping / report generation</text>
         </g>
 
-        <g transform="translate(280, 550)">
-          <rect width="680" height="100" rx="10" fill="#F8FAFC" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <g transform="translate(40, 460)">
+          <rect width="920" height="100" rx="10" fill="#F8FAFC" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="6 4"/>
           <text x="20" y="30" class="lab">Prod isolation (reserved / not provisioned)</text>
           <text x="20" y="54" class="sm">Planned project: rsi-listmatch-prod  |  dedicated VPC</text>
           <text x="20" y="78" class="sm">No SAM co-tenancy  |  SAM prod remains rsi-sam-prod</text>
         </g>
 
-        <!-- Hub label for NAT fan-out (visual only; arrows land on AWS boxes) -->
-        <g transform="translate(24, 140)">
-          <rect width="220" height="160" rx="10" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.5"/>
-          <text x="110" y="36" text-anchor="middle" class="lab">AWS ingress</text>
-          <text x="110" y="64" text-anchor="middle" class="sm">Source IP must be</text>
-          <text x="110" y="88" text-anchor="middle" class="sm">NAT VM static IP</text>
-          <text x="110" y="120" text-anchor="middle" class="sm">RDS + S3 + Lambda</text>
-          <text x="110" y="144" text-anchor="middle" class="sm">allowlisted</text>
+        <g transform="translate(40, 580)">
+          <rect width="920" height="70" rx="10" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.5"/>
+          <text x="20" y="28" class="lab">Ingress rule</text>
+          <text x="20" y="52" class="sm">AWS security groups / bucket policies allowlist NAT IPs only (Dev 34.67.129.122 · Staging 34.55.162.49)</text>
         </g>
       </g>
 
-      <g transform="translate(20, 860)" filter="url(#card)">
+      <g transform="translate(20, 760)" filter="url(#card)">
         <rect width="1008" height="140" rx="12" fill="#111827"/>
         <text x="24" y="36" class="w">CI / Ops</text>
         <text x="24" y="68" class="wsm">GitHub Actions + WIF (github-pool) - keyless deploy to Cloud Run</text>
@@ -217,29 +215,15 @@
       </g>
     </g>
 
-    <!--
-      CRITICAL CROSS-ZONE ARROWS (absolute coords within VPC group):
-      Zone A panel starts at (24,56); NAT box center roughly:
-        left panel x=24+20+24=68, NAT at y=56+48+500 = 604, height 110 → center y≈659, right edge x=68+400=468
-      Zone B AWS boxes start at 780+20+280 = 1080
-    -->
-
-    <!-- Amber AWS path: exit NAT RIGHT along a low trunk, then UP to each AWS service.
-         Keeps arrows clearly originating at NAT (never Cloud Run / Platform). -->
-    <!-- Trunk from NAT right edge -->
-    <path d="M468 655 H 900" fill="none" stroke="#D97706" stroke-width="2.5" stroke-dasharray="6 4"/>
-    <text x="520" y="640" class="flowA">sole AWS egress trunk (from NAT VM)</text>
-    <!-- Fan-up to RDS / S3 / Lambda -->
-    <path d="M900 655 V 175 H 1060" fill="none" stroke="#D97706" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrA)"/>
-    <path d="M900 655 V 275 H 1060" fill="none" stroke="#D97706" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrA)"/>
-    <path d="M900 655 V 375 H 1060" fill="none" stroke="#D97706" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrA)"/>
-    <text x="910" y="200" class="flowA">NAT -&gt; RDS</text>
-    <text x="910" y="300" class="flowA">NAT -&gt; S3</text>
-    <text x="910" y="400" class="flowA">NAT -&gt; Lambda</text>
-
-    <!-- Green: Direct VPC private path → Cloud SQL only (above the AWS trunk; never AWS) -->
-    <path d="M468 412 H 700 V 560 H 1060" fill="none" stroke="#059669" stroke-width="2.5" marker-end="url(#arrG)"/>
-    <text x="520" y="400" class="flowG">Langfuse -&gt; Cloud SQL private IP (GCP only; not via NAT)</text>
+    <!-- Amber ONLY: NAT → AWS. No green cross-zone path. -->
+    <path d="M468 655 H 820" fill="none" stroke="#D97706" stroke-width="2.5" stroke-dasharray="6 4"/>
+    <text x="500" y="640" class="flowA">sole AWS egress trunk (from NAT VM)</text>
+    <path d="M820 655 V 190 H 840" fill="none" stroke="#D97706" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrA)"/>
+    <path d="M820 655 V 310 H 840" fill="none" stroke="#D97706" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrA)"/>
+    <path d="M820 655 V 430 H 840" fill="none" stroke="#D97706" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrA)"/>
+    <text x="700" y="220" class="flowA">NAT -&gt; RDS</text>
+    <text x="700" y="340" class="flowA">NAT -&gt; S3</text>
+    <text x="700" y="460" class="flowA">NAT -&gt; Lambda</text>
   </g>
 
   <rect y="1348" width="2200" height="52" fill="#111827"/>
